@@ -4,6 +4,68 @@ using Newtonsoft.Json.Linq;
 
 namespace Valorant
 {
+    public static class Pregame
+    {
+        public static async Task LockCharacter(string character)
+        {
+            string region = Logfile.GetRegion();
+            string shard = Logfile.GetShard();
+            
+            string clientPlatform = Local.GetClientPlatform();
+            string clientVersion = await Local.GetClientVersion();
+            string entitlementToken = await Local.GetEntitlement();
+            string authorization = await Local.GetToken();
+
+            string match = await Pregame.GetMatchId(await Local.GetPlayerUUID());
+
+            HttpClientHandler handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true
+            };
+
+            using (HttpClient client = new HttpClient(handler))
+            {
+                client.DefaultRequestHeaders.Add("X-Riot-ClientPlatform", clientPlatform);
+                client.DefaultRequestHeaders.Add("X-Riot-ClientVersion", clientVersion);
+                client.DefaultRequestHeaders.Add("X-Riot-Entitlements-JWT", entitlementToken);
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {authorization}");
+                
+                HttpResponseMessage response = await client.GetAsync($"https://glz-{region}-1.{shard}.a.pvp.net/pregame/v1/matches/{match}/lock/{character}");
+                response.EnsureSuccessStatusCode();
+            }
+        }
+        public static async Task<string> GetMatchId(string puuid)
+        {
+            string region = Logfile.GetRegion();
+            string shard = Logfile.GetShard();
+            
+            string clientPlatform = Local.GetClientPlatform();
+            string clientVersion = await Local.GetClientVersion();
+            string entitlementToken = await Local.GetEntitlement();
+            string authorization = await Local.GetToken();
+
+            HttpClientHandler handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true
+            };
+
+            using (HttpClient client = new HttpClient(handler))
+            {
+                client.DefaultRequestHeaders.Add("X-Riot-ClientPlatform", clientPlatform);
+                client.DefaultRequestHeaders.Add("X-Riot-ClientVersion", clientVersion);
+                client.DefaultRequestHeaders.Add("X-Riot-Entitlements-JWT", entitlementToken);
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {authorization}");
+                
+                HttpResponseMessage response = await client.GetAsync($"https://glz-{region}-1.{shard}.a.pvp.net/pregame/v1/players/{puuid}");
+                response.EnsureSuccessStatusCode();
+
+                var responseString = await response.Content.ReadAsStringAsync();
+                var dataObj = JObject.Parse(responseString);
+                
+                return dataObj["MatchID"]?.ToString();
+            }
+        }
+    }
     public static class Local
     {
         static async Task Main()
@@ -14,19 +76,11 @@ namespace Valorant
                 string entitlementsToken = await GetEntitlement();
                 string clientVersion = await GetClientVersion();
                 string clientPlatform = GetClientPlatform();
-                
-                string region = Logfile.GetRegion();
-                string shard = Logfile.GetShard();
-                
-                string name = Lockfile.GetName();
-                
+
                 Console.WriteLine($"Token: {token}");
                 Console.WriteLine($"Entitlements Token: {entitlementsToken}");
                 Console.WriteLine($"Client Version: {clientVersion}");
                 Console.WriteLine($"Client Platform: {clientPlatform}");
-                Console.WriteLine($"Region: {region}");
-                Console.WriteLine($"Shard: {shard}");
-                Console.WriteLine($"Name: {name}");
             }
             catch (Exception ex)
             {
@@ -79,6 +133,30 @@ namespace Valorant
                 var dataObj = JObject.Parse(responseString);
                 
                 return dataObj["token"]?.ToString();
+            }
+        }
+        public static async Task<string> GetPlayerUUID()
+        {
+            int port = Lockfile.GetPort();
+            string password = Lockfile.GetPassword();
+
+            HttpClientHandler handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true
+            };
+
+            using (HttpClient client = new HttpClient(handler))
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                    "Basic", Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"riot:{password}")));
+                
+                HttpResponseMessage response = await client.GetAsync($"https://127.0.0.1:{port}/entitlements/v1/token");
+                response.EnsureSuccessStatusCode();
+
+                var responseString = await response.Content.ReadAsStringAsync();
+                var dataObj = JObject.Parse(responseString);
+                
+                return dataObj["subject"]?.ToString();
             }
         }
         public static async Task<string> GetClientVersion()

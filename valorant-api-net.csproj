@@ -9,6 +9,9 @@
         <AssemblyName>Valorant</AssemblyName>
         <Authors>stefa9</Authors>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Version>1.0.3</Version>
+        <Title>Valorant .NET API</Title>
+        <Description>Package for interacting with the unofficial in-game Valorant API</Description>
     </PropertyGroup>
 
     <ItemGroup>
