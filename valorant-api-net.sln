@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "valorant-api-net", "valorant-api-net.csproj", "{99DFDC9E-91D4-4C08-A47C-4A039B46F70B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{99DFDC9E-91D4-4C08-A47C-4A039B46F70B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99DFDC9E-91D4-4C08-A47C-4A039B46F70B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99DFDC9E-91D4-4C08-A47C-4A039B46F70B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99DFDC9E-91D4-4C08-A47C-4A039B46F70B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
