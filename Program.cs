@@ -6,6 +6,35 @@ namespace Valorant
 {
     public static class Pregame
     {
+        public static async Task SelectCharacter(string character)
+        {
+            string region = Logfile.GetRegion();
+            string shard = Logfile.GetShard();
+            
+            string clientPlatform = Local.GetClientPlatform();
+            string clientVersion = await Local.GetClientVersion();
+            string entitlementToken = await Local.GetEntitlement();
+            string authorization = await Local.GetToken();
+
+            string match = await Pregame.GetMatchId(await Local.GetPlayerUUID());
+
+            HttpClientHandler handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true
+            };
+
+            using (HttpClient client = new HttpClient(handler))
+            {
+                client.DefaultRequestHeaders.Add("X-Riot-ClientPlatform", clientPlatform);
+                client.DefaultRequestHeaders.Add("X-Riot-ClientVersion", clientVersion);
+                client.DefaultRequestHeaders.Add("X-Riot-Entitlements-JWT", entitlementToken);
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {authorization}");
+                
+                HttpResponseMessage response = await client.PostAsync(new Uri($"https://glz-{region}-1.{shard}.a.pvp.net/pregame/v1/matches/{match}/select/{character}"), null);
+                response.EnsureSuccessStatusCode();
+            }
+        }
+        
         public static async Task LockCharacter(string character)
         {
             string region = Logfile.GetRegion();
@@ -30,7 +59,7 @@ namespace Valorant
                 client.DefaultRequestHeaders.Add("X-Riot-Entitlements-JWT", entitlementToken);
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {authorization}");
                 
-                HttpResponseMessage response = await client.GetAsync($"https://glz-{region}-1.{shard}.a.pvp.net/pregame/v1/matches/{match}/lock/{character}");
+                HttpResponseMessage response = await client.PostAsync(new Uri($"https://glz-{region}-1.{shard}.a.pvp.net/pregame/v1/matches/{match}/lock/{character}"), null);
                 response.EnsureSuccessStatusCode();
             }
         }
@@ -81,6 +110,9 @@ namespace Valorant
                 Console.WriteLine($"Entitlements Token: {entitlementsToken}");
                 Console.WriteLine($"Client Version: {clientVersion}");
                 Console.WriteLine($"Client Platform: {clientPlatform}");
+
+                await Pregame.SelectCharacter(Agents.Gekko);
+                await Pregame.LockCharacter(Agents.Gekko);
             }
             catch (Exception ex)
             {
