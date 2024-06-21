@@ -127,84 +127,84 @@ namespace Valorant
     {
         public static async Task SelectCharacter(string character)
         {
-            string region = Logfile.GetRegion();
-            string shard = Logfile.GetShard();
+            var region = Logfile.GetRegion();
+            var shard = Logfile.GetShard();
             
-            string clientPlatform = Local.GetClientPlatform();
-            string clientVersion = await Local.GetClientVersion();
-            string entitlementToken = await Local.GetEntitlement();
-            string authorization = await Local.GetToken();
+            var clientPlatform = Local.GetClientPlatform();
+            var clientVersion = await Local.GetClientVersion();
+            var entitlementToken = await Local.GetEntitlement();
+            var authorization = await Local.GetToken();
 
-            string match = await Pregame.GetMatchId(await Local.GetPlayerUUID());
+            var match = await Pregame.GetMatchId(await Local.GetPlayerUUID());
 
             HttpClientHandler handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true
             };
 
-            using (HttpClient client = new HttpClient(handler))
+            using (var client = new HttpClient(handler))
             {
                 client.DefaultRequestHeaders.Add("X-Riot-ClientPlatform", clientPlatform);
                 client.DefaultRequestHeaders.Add("X-Riot-ClientVersion", clientVersion);
                 client.DefaultRequestHeaders.Add("X-Riot-Entitlements-JWT", entitlementToken);
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {authorization}");
                 
-                HttpResponseMessage response = await client.PostAsync(new Uri($"https://glz-{region}-1.{shard}.a.pvp.net/pregame/v1/matches/{match}/select/{character}"), null);
+                var response = await client.PostAsync(new Uri($"https://glz-{region}-1.{shard}.a.pvp.net/pregame/v1/matches/{match}/select/{character}"), null);
                 response.EnsureSuccessStatusCode();
             }
         }
         
         public static async Task LockCharacter(string character)
         {
-            string region = Logfile.GetRegion();
-            string shard = Logfile.GetShard();
+            var region = Logfile.GetRegion();
+            var shard = Logfile.GetShard();
             
-            string clientPlatform = Local.GetClientPlatform();
-            string clientVersion = await Local.GetClientVersion();
-            string entitlementToken = await Local.GetEntitlement();
-            string authorization = await Local.GetToken();
+            var clientPlatform = Local.GetClientPlatform();
+            var clientVersion = await Local.GetClientVersion();
+            var entitlementToken = await Local.GetEntitlement();
+            var authorization = await Local.GetToken();
 
-            string match = await Pregame.GetMatchId(await Local.GetPlayerUUID());
+            var match = await Pregame.GetMatchId(await Local.GetPlayerUUID());
 
-            HttpClientHandler handler = new HttpClientHandler
+            var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true
             };
 
-            using (HttpClient client = new HttpClient(handler))
+            using (var client = new HttpClient(handler))
             {
                 client.DefaultRequestHeaders.Add("X-Riot-ClientPlatform", clientPlatform);
                 client.DefaultRequestHeaders.Add("X-Riot-ClientVersion", clientVersion);
                 client.DefaultRequestHeaders.Add("X-Riot-Entitlements-JWT", entitlementToken);
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {authorization}");
                 
-                HttpResponseMessage response = await client.PostAsync(new Uri($"https://glz-{region}-1.{shard}.a.pvp.net/pregame/v1/matches/{match}/lock/{character}"), null);
+                var response = await client.PostAsync(new Uri($"https://glz-{region}-1.{shard}.a.pvp.net/pregame/v1/matches/{match}/lock/{character}"), null);
                 response.EnsureSuccessStatusCode();
             }
         }
         public static async Task<string> GetMatchId(string puuid)
         {
-            string region = Logfile.GetRegion();
-            string shard = Logfile.GetShard();
+            var region = Logfile.GetRegion();
+            var shard = Logfile.GetShard();
             
-            string clientPlatform = Local.GetClientPlatform();
-            string clientVersion = await Local.GetClientVersion();
-            string entitlementToken = await Local.GetEntitlement();
-            string authorization = await Local.GetToken();
+            var clientPlatform = Local.GetClientPlatform();
+            var clientVersion = await Local.GetClientVersion();
+            var entitlementToken = await Local.GetEntitlement();
+            var authorization = await Local.GetToken();
 
-            HttpClientHandler handler = new HttpClientHandler
+            var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true
             };
 
-            using (HttpClient client = new HttpClient(handler))
+            using (var client = new HttpClient(handler))
             {
                 client.DefaultRequestHeaders.Add("X-Riot-ClientPlatform", clientPlatform);
                 client.DefaultRequestHeaders.Add("X-Riot-ClientVersion", clientVersion);
                 client.DefaultRequestHeaders.Add("X-Riot-Entitlements-JWT", entitlementToken);
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {authorization}");
                 
-                HttpResponseMessage response = await client.GetAsync($"https://glz-{region}-1.{shard}.a.pvp.net/pregame/v1/players/{puuid}");
+                var response = await client.GetAsync($"https://glz-{region}-1.{shard}.a.pvp.net/pregame/v1/players/{puuid}");
                 response.EnsureSuccessStatusCode();
 
                 var responseString = await response.Content.ReadAsStringAsync();
@@ -233,20 +233,20 @@ namespace Valorant
         }
         public static async Task<string> GetToken()
         {
-            int port = Lockfile.GetPort();
-            string password = Lockfile.GetPassword();
+            var port = Lockfile.GetPort();
+            var password = Lockfile.GetPassword();
 
-            HttpClientHandler handler = new HttpClientHandler
+            var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true
             };
 
-            using (HttpClient client = new HttpClient(handler))
+            using (var client = new HttpClient(handler))
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
                     "Basic", Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"riot:{password}")));
                 
-                HttpResponseMessage response = await client.GetAsync($"https://127.0.0.1:{port}/entitlements/v1/token");
+                var response = await client.GetAsync($"https://127.0.0.1:{port}/entitlements/v1/token");
                 response.EnsureSuccessStatusCode();
 
                 var responseString = await response.Content.ReadAsStringAsync();
@@ -257,20 +257,20 @@ namespace Valorant
         }
         public static async Task<string> GetEntitlement()
         {
-            int port = Lockfile.GetPort();
-            string password = Lockfile.GetPassword();
+            var port = Lockfile.GetPort();
+            var password = Lockfile.GetPassword();
 
-            HttpClientHandler handler = new HttpClientHandler
+            var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true
             };
 
-            using (HttpClient client = new HttpClient(handler))
+            using (var client = new HttpClient(handler))
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
                     "Basic", Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"riot:{password}")));
                 
-                HttpResponseMessage response = await client.GetAsync($"https://127.0.0.1:{port}/entitlements/v1/token");
+                var response = await client.GetAsync($"https://127.0.0.1:{port}/entitlements/v1/token");
                 response.EnsureSuccessStatusCode();
 
                 var responseString = await response.Content.ReadAsStringAsync();
@@ -281,20 +281,20 @@ namespace Valorant
         }
         public static async Task<string> GetPlayerUUID()
         {
-            int port = Lockfile.GetPort();
-            string password = Lockfile.GetPassword();
+            var port = Lockfile.GetPort();
+            var password = Lockfile.GetPassword();
 
-            HttpClientHandler handler = new HttpClientHandler
+            var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true
             };
 
-            using (HttpClient client = new HttpClient(handler))
+            using (var client = new HttpClient(handler))
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
                     "Basic", Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"riot:{password}")));
                 
-                HttpResponseMessage response = await client.GetAsync($"https://127.0.0.1:{port}/entitlements/v1/token");
+                var response = await client.GetAsync($"https://127.0.0.1:{port}/entitlements/v1/token");
                 response.EnsureSuccessStatusCode();
 
                 var responseString = await response.Content.ReadAsStringAsync();
@@ -305,20 +305,20 @@ namespace Valorant
         }
         public static async Task<string> GetClientVersion()
         {
-            int port = Lockfile.GetPort();
-            string password = Lockfile.GetPassword();
+            var port = Lockfile.GetPort();
+            var password = Lockfile.GetPassword();
 
-            HttpClientHandler handler = new HttpClientHandler
+            var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true
             };
 
-            using (HttpClient client = new HttpClient(handler))
+            using (var client = new HttpClient(handler))
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
                     "Basic", Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"riot:{password}")));
                 
-                HttpResponseMessage response = await client.GetAsync("https://valorant-api.com/v1/version");
+                var response = await client.GetAsync("https://valorant-api.com/v1/version");
                 response.EnsureSuccessStatusCode();
 
                 var responseString = await response.Content.ReadAsStringAsync();
@@ -343,13 +343,13 @@ namespace Valorant
         {
             try
             {
-                using (FileStream fs = new FileStream(logFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var fs = new FileStream(logFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    using (StreamReader reader = new StreamReader(fs))
+                    using (var reader = new StreamReader(fs))
                     {
-                        string logContent = reader.ReadToEnd();
-                        Regex regex = new Regex(@"https://glz-(.+?)-1\.(.+?)\.a\.pvp\.net");
-                        Match match = regex.Match(logContent);
+                        var logContent = reader.ReadToEnd();
+                        var regex = new Regex(@"https://glz-(.+?)-1\.(.+?)\.a\.pvp\.net");
+                        var match = regex.Match(logContent);
 
                         if (match.Success)
                         {
@@ -374,13 +374,13 @@ namespace Valorant
         {
             try
             {
-                using (FileStream fs = new FileStream(logFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var fs = new FileStream(logFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    using (StreamReader reader = new StreamReader(fs))
+                    using (var reader = new StreamReader(fs))
                     {
-                        string logContent = reader.ReadToEnd();
-                        Regex regex = new Regex(@"https://glz-(.+?)-1\.(.+?)\.a\.pvp\.net");
-                        Match match = regex.Match(logContent);
+                        var logContent = reader.ReadToEnd();
+                        var regex = new Regex(@"https://glz-(.+?)-1\.(.+?)\.a\.pvp\.net");
+                        var match = regex.Match(logContent);
 
                         if (match.Success)
                         {
@@ -410,11 +410,11 @@ namespace Valorant
         {
             try
             {
-                using (FileStream fileStream = new FileStream(_lockfilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var fileStream = new FileStream(_lockfilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    using (StreamReader reader = new StreamReader(fileStream))
+                    using (var reader = new StreamReader(fileStream))
                     {
-                        string lockfileContent = reader.ReadToEnd();
+                        var lockfileContent = reader.ReadToEnd();
                         return lockfileContent.Split(':');
                     }
                 }
@@ -428,31 +428,31 @@ namespace Valorant
 
         public static string GetName()
         {
-            string[] lockfileParts = ReadLockfile();
+            var lockfileParts = ReadLockfile();
             return lockfileParts.Length >= 1 ? lockfileParts[0] : string.Empty;
         }
 
         public static int GetPid()
         {
-            string[] lockfileParts = ReadLockfile();
+            var lockfileParts = ReadLockfile();
             return lockfileParts.Length >= 2 ? int.Parse(lockfileParts[1]) : 0;
         }
 
         public static int GetPort()
         {
-            string[] lockfileParts = ReadLockfile();
+            var lockfileParts = ReadLockfile();
             return lockfileParts.Length >= 3 ? int.Parse(lockfileParts[2]) : 0;
         }
 
         public static string GetPassword()
         {
-            string[] lockfileParts = ReadLockfile();
+            var lockfileParts = ReadLockfile();
             return lockfileParts.Length >= 4 ? lockfileParts[3] : string.Empty;
         }
 
         public static string GetProtocol()
         {
-            string[] lockfileParts = ReadLockfile();
+            var lockfileParts = ReadLockfile();
             return lockfileParts.Length >= 5 ? lockfileParts[4] : string.Empty;
         }
     }
